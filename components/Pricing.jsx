@@ -6,6 +6,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useAuth } from "@clerk/nextjs";
 import { useIntersectionObserver } from "@/hooks/use-landing-hooks";
+import { useRouter } from "next/navigation";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -22,7 +23,8 @@ const PricingCard = ({
 }) => {
   const [ref, isVisible] = useIntersectionObserver();
   const [isHovered, setIsHovered] = useState(false);
-  const { has } = useAuth();
+  const { isSignedIn, has } = useAuth();
+  const router = useRouter();
 
   const isCurrentPlan = planId ? has?.({ plan: planId }) : false;
 
@@ -80,7 +82,13 @@ const PricingCard = ({
               : "bg-white/20 hover:bg-white/30 text-white"
           }`}
           onClick={async () => {
+            if (!isSignedIn) {
+              router.push("/sign-in"); // Redirect if not signed in
+              return;
+            }
+
             if (!planId || isCurrentPlan) return;
+
             try {
               if (window.Clerk && window.Clerk.__internal_openCheckout) {
                 await window.Clerk.__internal_openCheckout({

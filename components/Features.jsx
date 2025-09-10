@@ -112,7 +112,6 @@ function FeatureCard({ feature }) {
   useEffect(() => {
     if (!cardRef.current || !borderRef.current) return;
 
-    // Hover animation: lift & scale
     const hoverAnim = gsap.to(cardRef.current, {
       y: -5,
       scale: 1.02,
@@ -121,9 +120,8 @@ function FeatureCard({ feature }) {
       ease: "power1.out",
     });
 
-    // Hover animation: border glow
     const borderAnim = gsap.to(borderRef.current, {
-      borderColor: "rgba(99, 102, 241, 1)", // Tailwind primary-500
+      borderColor: "rgba(99, 102, 241, 1)",
       boxShadow: "0 0 20px rgba(99, 102, 241, 0.5)",
       duration: 0.3,
       paused: true,
@@ -139,12 +137,15 @@ function FeatureCard({ feature }) {
       borderAnim.reverse();
     };
 
-    cardRef.current.addEventListener("mouseenter", enter);
-    cardRef.current.addEventListener("mouseleave", leave);
+    const cardEl = cardRef.current; // store ref in a variable
+    cardEl.addEventListener("mouseenter", enter);
+    cardEl.addEventListener("mouseleave", leave);
 
     return () => {
-      cardRef.current.removeEventListener("mouseenter", enter);
-      cardRef.current.removeEventListener("mouseleave", leave);
+      if (cardEl) {
+        cardEl.removeEventListener("mouseenter", enter);
+        cardEl.removeEventListener("mouseleave", leave);
+      }
     };
   }, []);
 
@@ -153,12 +154,10 @@ function FeatureCard({ feature }) {
       ref={cardRef}
       className="feature-card h-full glass rounded-2xl p-8 border border-card-border shadow-glow-subtle relative overflow-hidden transition-all duration-300"
     >
-      {/* Border overlay for glow animation */}
       <div
         ref={borderRef}
         className="absolute inset-0 rounded-2xl border border-transparent pointer-events-none"
       />
-
       <div className="relative mb-6">
         <div
           className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${gradient} p-4`}
@@ -167,11 +166,8 @@ function FeatureCard({ feature }) {
         </div>
         <div className="absolute inset-0 w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 blur-xl transition-all duration-300" />
       </div>
-
       <h3 className="text-2xl font-bold mb-4 text-foreground">{title}</h3>
-
       <p className="text-muted-foreground leading-relaxed">{description}</p>
-
       <div className="mt-6 pt-6 border-t border-card-border">
         <div className="flex items-center space-x-2 text-sm text-primary">
           <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
@@ -181,5 +177,6 @@ function FeatureCard({ feature }) {
     </div>
   );
 }
+
 
 export default Features;
