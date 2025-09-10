@@ -27,7 +27,7 @@ const Navbar = () => {
             <div className="absolute inset-0 h-8 w-8 text-secondary animate-glow-pulse opacity-50" />
           </div>
           <span className="text-2xl font-bold bg-gradient-primary !bg-clip-text text-transparent">
-            Pixora AI
+            PictoAI
           </span>
         </div>
         {path === "/" && (

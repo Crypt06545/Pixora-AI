@@ -47,7 +47,7 @@ const Hero = () => {
         style={{ animationDelay: "-1s" }}
       />
 
-      <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10 mt-14">
+      <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-center relative z-10 sm:mt-20 md:mt-0">
         {/* Left Content */}
         <div
           ref={leftContentRef}
@@ -59,7 +59,7 @@ const Hero = () => {
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
-            Pixora AI
+            PictoAI
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-md sm:max-w-lg lg:max-w-xl">
