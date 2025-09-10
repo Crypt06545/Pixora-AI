@@ -24,9 +24,32 @@ const PricingCard = ({
   const [ref, isVisible] = useIntersectionObserver();
   const [isHovered, setIsHovered] = useState(false);
   const { isSignedIn, has } = useAuth();
+  const [isCurrentPlan, setIsCurrentPlan] = useState(planId ? has?.({ plan: planId }) : false);
   const router = useRouter();
 
-  const isCurrentPlan = planId ? has?.({ plan: planId }) : false;
+  const handleUpgrade = async () => {
+    if (!isSignedIn) {
+      router.push("/sign-in"); // Redirect if not signed in
+      return;
+    }
+
+    if (!planId || isCurrentPlan) return;
+
+    try {
+      if (window.Clerk && window.Clerk.__internal_openCheckout) {
+        await window.Clerk.__internal_openCheckout({
+          planId,
+          planPeriod: "month",
+          subscriberType: "user",
+        });
+
+        // After successful checkout, update button to Current Plan
+        setIsCurrentPlan(true);
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+    }
+  };
 
   return (
     <div
@@ -61,7 +84,9 @@ const PricingCard = ({
         {/* Price */}
         <div className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-6">
           {price}
-          {price !== "$0" && <span className="text-lg text-gray-400">/month</span>}
+          {price !== "$0" && (
+            <span className="text-lg text-gray-400">/month</span>
+          )}
         </div>
 
         {/* Features */}
@@ -77,30 +102,13 @@ const PricingCard = ({
         {/* CTA Button */}
         <Button
           className={`w-full font-semibold py-3 rounded-xl transition-all duration-300 ${
-            name === "Pro"
+            isCurrentPlan
+              ? "bg-gray-400 cursor-not-allowed text-white"
+              : name === "Pro"
               ? "bg-blue-500 hover:bg-blue-600 text-white"
               : "bg-white/20 hover:bg-white/30 text-white"
           }`}
-          onClick={async () => {
-            if (!isSignedIn) {
-              router.push("/sign-in"); // Redirect if not signed in
-              return;
-            }
-
-            if (!planId || isCurrentPlan) return;
-
-            try {
-              if (window.Clerk && window.Clerk.__internal_openCheckout) {
-                await window.Clerk.__internal_openCheckout({
-                  planId,
-                  planPeriod: "month",
-                  subscriberType: "user",
-                });
-              }
-            } catch (err) {
-              console.error("Checkout error:", err);
-            }
-          }}
+          onClick={handleUpgrade}
           disabled={isCurrentPlan || !planId}
         >
           {isCurrentPlan ? "Current Plan" : cta}
@@ -195,7 +203,8 @@ const Pricing = () => {
             </span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Start free, upgrade when you need more. No hidden fees, cancel anytime.
+            Start free, upgrade when you need more. No hidden fees, cancel
+            anytime.
           </p>
         </div>
 
@@ -209,7 +218,8 @@ const Pricing = () => {
         {/* Footer */}
         <div className="text-center mt-16">
           <p className="text-muted-foreground">
-            All plans include access to our core AI features. Upgrade anytime for more power.
+            All plans include access to our core AI features. Upgrade anytime
+            for more power.
           </p>
         </div>
       </div>
