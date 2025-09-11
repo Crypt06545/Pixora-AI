@@ -13,7 +13,7 @@ const Dashboard = () => {
   const { data: projects, isLoading } = useConvexQuery(
     api.projects.getUserProjects
   );
-  const {mutate: createProject} = useConvexMutation(api.projects.create)
+
 
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
 
@@ -72,7 +72,6 @@ const Dashboard = () => {
           isOpen={showNewProjectModal}
           onClose={() => setShowNewProjectModal(false)}
           projects={projects}
-          createProject={createProject}
         />
       </div>
     </div>
