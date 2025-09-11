@@ -2,16 +2,18 @@
 
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
-import { useConvexQuery } from "@/hooks/use-convex-query";
+import { useConvexMutation, useConvexQuery } from "@/hooks/use-convex-query";
 import { Plus, Sparkles } from "lucide-react";
 import React, { useState } from "react";
 import { BarLoader } from "react-spinners";
 import NewProjectModal from "./_components/new-project-modal";
 
 const Dashboard = () => {
+
   const { data: projects, isLoading } = useConvexQuery(
     api.projects.getUserProjects
   );
+  const {mutate: createProject} = useConvexMutation(api.projects.create)
 
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
 
@@ -69,6 +71,8 @@ const Dashboard = () => {
         <NewProjectModal
           isOpen={showNewProjectModal}
           onClose={() => setShowNewProjectModal(false)}
+          projects={projects}
+          createProject={createProject}
         />
       </div>
     </div>
