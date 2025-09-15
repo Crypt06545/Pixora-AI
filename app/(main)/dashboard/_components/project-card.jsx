@@ -6,6 +6,17 @@ import { formatDistanceToNow } from "date-fns";
 import { useConvexMutation } from "@/hooks/use-convex-query";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useState } from "react";
 
 export default function ProjectCard({ project, onEdit }) {
   const { mutate: deleteProject, isLoading } = useConvexMutation(
@@ -16,19 +27,16 @@ export default function ProjectCard({ project, onEdit }) {
     addSuffix: true,
   });
 
-  const handleDelete = async () => {
-    const confirmed = confirm(
-      `Are you sure you want to delete "${project.title}"? This action cannot be undone.`
-    );
+  const [open, setOpen] = useState(false);
 
-    if (confirmed) {
-      try {
-        await deleteProject({ projectId: project._id });
-        toast.success("Project deleted successfully");
-      } catch (error) {
-        console.error("Error deleting project:", error);
-        toast.error("Failed to delete project. Please try again.");
-      }
+  const handleDelete = async () => {
+    try {
+      await deleteProject({ projectId: project._id });
+      toast.success("Project deleted successfully");
+      setOpen(false);
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      toast.error("Failed to delete project. Please try again.");
     }
   };
 
@@ -50,16 +58,37 @@ export default function ProjectCard({ project, onEdit }) {
             <Edit className="h-4 w-4" />
             Edit
           </Button>
-          <Button
-            variant="glass"
-            size="sm"
-            onClick={handleDelete}
-            className="gap-2 text-red-400 hover:text-red-300"
-            disabled={isLoading}
-          >
-            <Trash2 className="h-4 w-4" />
-            Delete
-          </Button>
+
+          {/* Shadcn AlertDialog Trigger */}
+          <AlertDialog open={open} onOpenChange={setOpen}>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="glass"
+                size="sm"
+                className="gap-2 text-red-400 hover:text-red-300"
+                disabled={isLoading}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Project</AlertDialogTitle>
+                Are you sure you want to delete "{project.title}"? This action
+                cannot be undone.
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDelete}
+                  className="bg-red-600 hover:bg-red-500"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 
